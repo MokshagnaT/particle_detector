@@ -1,11 +1,17 @@
 const r = require("raylib");
 
+const window_width = 300;
+const window_height = 200;
+const detector_width = 20;
+const detector_height = window_height;
+
 function running() {
     return !r.WindowShouldClose();
 }
 
 function setup() {
-    // prepare the sketch
+    r.InitWindow(window_width, window_height, "Rectangle in the Center");
+    r.SetTargetFPS(50);
 }
 
 function update() {
@@ -13,7 +19,12 @@ function update() {
 }
 
 function draw() {
-    // draw the current state
+    r.BeginDrawing();
+    r.ClearBackground(r.BLACK);
+
+
+
+    r.EndDrawing();
 }
 
 function teardown() {
