@@ -46,9 +46,10 @@ function draw() {
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
 
+    r.DrawRectangle(particle_field_start, particle_field_y, particle_field_width, particle_field_height, r.BLUE);
+
     r.DrawRectangle(detector_x, detector_y, detector_width, detector_height, r.WHITE);
 
-    r.DrawRectangle(particle_field_x, particle_field_y, particle_field_width, particle_field_height, r.BLUE);
 
     r.EndDrawing();
 }
