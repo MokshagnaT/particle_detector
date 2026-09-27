@@ -1,7 +1,7 @@
 const r = require("raylib");
 
-const window_width = 600;
-const window_height = 1800;
+const window_width = 300;
+const window_height = 200;
 
 
 // Vertical Detectors' and Fields' variables
@@ -9,13 +9,15 @@ const window_height = 1800;
 const vertical_y = 0;
 const vertical_height = window_height;
 
-const detector1_width = 20;
+const detector1_width = 5;
 let detector1_start = 0;
 const detector1_end_boundary = window_width / 2;
+let detector1_speed = 1;
 
-const detector2_width = 40;
+const detector2_width = 20;
 let detector2_start = window_width / 2;
 const detector2_end_boundary = window_width;
+let detector2_speed = 3;
 
 const field1_start = 100;
 const field1_end = 150;
@@ -34,6 +36,7 @@ const horizontal_width = window_width;
 const detector3_height = 20;
 let detector3_start = 0;
 const detector3_end_boundary = window_height;
+let detector3_speed = 3;
 
 const field3_start = 100;
 const field3_end = 140;
@@ -64,33 +67,47 @@ function setup() {
 
 }
 
-let direction_decider1 = 1; // For Vertical Detector(1)
-let direction_decider2 = 1; // For Vertical Detector(2)
-let direction_decider3 = 1; // For Horizontal Detector(3)
 
 function update() {
 
     // Vertical Detectors
 
-    detector1_start += direction_decider1;
-    const detector1_end = detector1_start + detector1_width;
-    if (detector1_start === 0 || detector1_end === detector1_end_boundary) {
-        direction_decider1 = -(direction_decider1);
+    detector1_start += detector1_speed;
+
+    const detector1_max_start = detector1_end_boundary - detector1_width;
+
+    if (detector1_start > detector1_max_start)
+        detector1_start = detector1_max_start;
+    if (detector1_start < 0)
+        detector1_start = 0;
+    if (detector1_start === 0 || detector1_start === detector1_max_start) {
+        detector1_speed = -(detector1_speed);
     }
 
-    detector2_start += direction_decider2;
-    const detector2_end = detector2_start + detector2_width;
-    if (detector2_start === window_width / 2 || detector2_end === detector2_end_boundary) {
-        direction_decider2 = -(direction_decider2);
+    detector2_start += detector2_speed;
+
+    const detector2_max_start = detector2_end_boundary - detector2_width;
+
+    if (detector2_start > detector2_max_start)
+        detector2_start = detector2_max_start;
+    if (detector2_start < window_width / 2)
+        detector2_start = window_width / 2;
+    if (detector2_start === window_width / 2 || detector2_start === detector2_max_start) {
+        detector2_speed = -(detector2_speed);
     }
 
     // Horizontal Detector
 
-    detector3_start += direction_decider3;
-    const detector3_end = detector3_start + detector3_height;
-    if (detector3_start === 0 || detector3_end === detector3_end_boundary) {
-        direction_decider3 = -(direction_decider3);
-    }
+    detector3_start += detector3_speed;
+
+    const detector3_max_start = detector3_end_boundary - detector3_height;
+
+    if (detector3_start > detector3_max_start)
+        detector3_start = detector3_max_start;
+    if (detector3_start < 0)
+        detector3_start = 0;
+    if (detector3_start === 0 || detector3_start === detector3_max_start)
+        detector3_speed = -(detector3_speed);
 
 }
 
