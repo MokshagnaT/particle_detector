@@ -1,23 +1,16 @@
+// Modules
+
 const r = require("raylib");
 
-const window_width = 300;
-const window_height = 200;
+const window = require("./window.js");
 
+const d1 = require("./d1.js");
+const d2 = require("./d2.js");
+const d3 = require("./d3.js");
 
-// Vertical Detectors' and Fields' variables
+const detector = require("./detector_functions.js");
 
-const vertical_y = 0;
-const vertical_height = window_height;
-
-const detector1_width = 5;
-let detector1_start = 0;
-const detector1_end_boundary = window_width / 2;
-let detector1_speed = 1;
-
-const detector2_width = 20;
-let detector2_start = window_width / 2;
-const detector2_end_boundary = window_width;
-let detector2_speed = 3;
+// Particle Field Variables
 
 const field1_start = 100;
 const field1_end = 150;
@@ -27,32 +20,10 @@ const field2_start = 200;
 const field2_end = 205;
 const field2_width = field2_end - field2_start;
 
-
-// Horizontal Detector and Field variables
-
-const horizontal_x = 0;
-const horizontal_width = window_width;
-
-const detector3_height = 20;
-let detector3_start = 0;
-const detector3_end_boundary = window_height;
-let detector3_speed = 3;
-
 const field3_start = 100;
 const field3_end = 140;
 const field3_height = field3_end - field3_start;
 
-
-// Function to change detector color based on whether it's overlapping with a particle field
-function detector_color(detector_start, detector_width, pf1_start, pf1_end, pf2_start, pf2_end) {
-
-    detector_end = detector_start + detector_width;
-    const pf1_overlap = detector_end >= pf1_start && detector_start <= pf1_end;
-    const pf2_overlap = detector_end >= pf2_start && detector_start <= pf2_end;
-
-    return pf1_overlap || pf2_overlap ? r.RED : r.WHITE;
-
-}
 
 function running() {
 
@@ -62,7 +33,8 @@ function running() {
 
 function setup() {
 
-    r.InitWindow(window_width, window_height, "Particle Detectors");
+    r.SetTraceLogLevel(r.LOG_NONE);
+    r.InitWindow(window.width, window.height, "Particle Detectors");
     r.SetTargetFPS(50);
 
 }
@@ -70,66 +42,44 @@ function setup() {
 
 function update() {
 
-    // Vertical Detectors
+    const d1_max_start = d1.upper_boundary - d1.width;
+    d1.start = detector.position(d1.start, d1.lower_boundary, d1.upper_boundary, d1.width, d1.speed);
+    d1.speed = detector.speed_changer(d1.start, d1.lower_boundary, d1_max_start, d1.speed);
 
-    detector1_start += detector1_speed;
+    const d2_max_start = d2.upper_boundary - d2.width;
+    d2.start = detector.position(d2.start, d2.lower_boundary, d2.upper_boundary, d2.width, d2.speed);
+    d2.speed = detector.speed_changer(d2.start, d2.lower_boundary, d2_max_start, d2.speed);
 
-    const detector1_max_start = detector1_end_boundary - detector1_width;
-
-    if (detector1_start > detector1_max_start)
-        detector1_start = detector1_max_start;
-    if (detector1_start < 0)
-        detector1_start = 0;
-    if (detector1_start === 0 || detector1_start === detector1_max_start) {
-        detector1_speed = -(detector1_speed);
-    }
-
-    detector2_start += detector2_speed;
-
-    const detector2_max_start = detector2_end_boundary - detector2_width;
-
-    if (detector2_start > detector2_max_start)
-        detector2_start = detector2_max_start;
-    if (detector2_start < window_width / 2)
-        detector2_start = window_width / 2;
-    if (detector2_start === window_width / 2 || detector2_start === detector2_max_start) {
-        detector2_speed = -(detector2_speed);
-    }
-
-    // Horizontal Detector
-
-    detector3_start += detector3_speed;
-
-    const detector3_max_start = detector3_end_boundary - detector3_height;
-
-    if (detector3_start > detector3_max_start)
-        detector3_start = detector3_max_start;
-    if (detector3_start < 0)
-        detector3_start = 0;
-    if (detector3_start === 0 || detector3_start === detector3_max_start)
-        detector3_speed = -(detector3_speed);
+    const d3_max_start = d3.upper_boundary - d3.height;
+    d3.start = detector.position(d3.start, d3.lower_boundary, d3.upper_boundary, d3.height, d3.speed);
+    d3.speed = detector.speed_changer(d3.start, d3.lower_boundary, d3_max_start, d3.speed);
 
 }
 
+
 function draw() {
+
+    const d1_color = detector.color(d1.start, d1.width, field1_start, field1_end, field2_start, field2_end); // For Vertical Detector(1)
+    const d2_color = detector.color(d2.start, d2.width, field1_start, field1_end, field2_start, field2_end); // For Vertical Detector(2)
+    const d3_color = detector.color(d3.start, d3.height, field3_start, field3_end); // For Horizontal Detector(3)
 
     r.BeginDrawing();
     r.ClearBackground(r.BLACK);
 
-    const detector1_color = detector_color(detector1_start, detector1_width, field1_start, field1_end, field2_start, field2_end); // For Vertical Detector(1)
-    const detector2_color = detector_color(detector2_start, detector2_width, field1_start, field1_end, field2_start, field2_end); // For Vertical Detector(2)
-    const detector3_color = detector_color(detector3_start, detector3_height, field3_start, field3_end); // For Horizontal Detector(3)
+    draw_field(field1_start, window.vertical_y, field1_width, window.vertical_height);
+    draw_field(field2_start, window.vertical_y, field2_width, window.vertical_height);
+    draw_field(window.horizontal_x, field3_start, window.horizontal_width, field3_height);
 
-    r.DrawRectangle(field1_start, vertical_y, field1_width, vertical_height, r.BLUE);
-    r.DrawRectangle(field2_start, vertical_y, field2_width, vertical_height, r.BLUE);
-    r.DrawRectangle(horizontal_x, field3_start, horizontal_width, field3_height, r.BLUE);
-
-    r.DrawRectangle(detector1_start, vertical_y, detector1_width, vertical_height, detector1_color);
-    r.DrawRectangle(detector2_start, vertical_y, detector2_width, vertical_height, detector2_color);
-    r.DrawRectangle(horizontal_x, detector3_start, horizontal_width, detector3_height, detector3_color);
+    detector.draw(d1.start, window.vertical_y, d1.width, window.vertical_height, d1_color);
+    detector.draw(d2.start, window.vertical_y, d2.width, window.vertical_height, d2_color);
+    detector.draw(window.horizontal_x, d3.start, window.horizontal_width, d3.height, d3_color);
 
     r.EndDrawing();
 
+}
+
+function draw_field(x, y, width, height) {
+    r.DrawRectangle(x, y, width, height, r.SKYBLUE);
 }
 
 function teardown() {
